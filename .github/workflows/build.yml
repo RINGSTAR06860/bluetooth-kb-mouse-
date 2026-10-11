@@ -3,8 +3,6 @@ name: 构建蓝牙键鼠 APK
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -21,21 +19,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: 安装 Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.2'
+
       - name: 设置 Android SDK
         uses: android-actions/setup-android@v3
-
-      - name: 缓存 Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: 赋予 gradlew 执行权限
-        run: chmod +x gradlew || true
 
       - name: 构建 Debug APK
         run: gradle assembleDebug --no-daemon
