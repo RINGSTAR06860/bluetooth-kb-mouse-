@@ -22,19 +22,18 @@ jobs:
       - name: 设置 Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: 接受 SDK 许可证并安装组件
+      - name: 安装 SDK 组件
         run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      - name: 安装 Gradle 并生成 wrapper
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gradle
-          gradle wrapper --gradle-version 8.2
+      - name: 设置 Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.2'
 
       - name: 构建 Debug APK
-        run: ./gradlew assembleDebug --no-daemon
+        run: gradle assembleDebug --no-daemon
 
       - name: 上传 APK
         uses: actions/upload-artifact@v4
